@@ -1,20 +1,11 @@
 /*
+ *  jtest.c  ... test program for the MCC Data Injector.
+ *  This is a Python3 extension for the MCC drivers.  This file
+ *  is derived from usb-2408.c in the MCC drivers github repo 
+ *  (as of June 5 2017)
  *
- *  Copyright (c) 2015 Warren J. Jasper <wjasper@tx.ncsu.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-*/
+ */
 
 #include <stdlib.h>
 #include <time.h>
@@ -31,6 +22,80 @@
 #define MAX_COUNT     (0xffff)
 #define FALSE 0
 #define TRUE 1
+
+#define __PEXT 0
+
+#if __PEXT
+
+#include <Python.h>
+
+/**** Python Extension ****/
+
+
+//Called from Python ... wrapper to local function(s)//
+static PyObject* fib(PyObject* self, PyObject* args)
+{
+	int n;
+	if (!PyArg_ParseTuple(args, "i", &n))
+		return NULL;
+		
+	blinkIt(25);
+		
+	return Py_BuildValue("i", Cfib(n));
+}
+
+//Returns the version //
+static PyObject* version(PyObject* self)
+{
+	return Py_BuildValue("s", "jtest Version 1.0");
+}
+
+
+// Method Definitions
+static PyMethodDef myMethods[] = {
+	{"fib", fib, METH_VARARGS, "Calculates Fibonacci numbers"},
+	{"fib", fib, METH_VARARGS, "Calculates Fibonacci numbers"},
+	{"version", (PyCFunction)version, METH_NOARGS, "Returns the version"},
+	{NULL, NULL, 0, NULL}
+};
+
+
+// Module Definition
+static struct PyModuleDef myModule = {
+	PyModuleDef_HEAD_INIT,
+	"jtest",
+	"jtest Module",
+	-1, 
+	myMethods
+};
+
+//Initializer Function
+PyMODINIT_FUNC PyInit_myModule(void)
+{
+	return PyModule_Create(&myModule);
+};
+
+
+
+/**************************/
+
+#endif
+
+
+//Local function called from above Python wrapper//
+int Cfib(int n)
+{
+	if (n<2)
+		return n;
+	else
+		return Cfib(n-1) + Cfib(n-2);
+}
+
+
+
+
+
+
 
 /* Test Program */
 int toContinue()
@@ -75,7 +140,7 @@ int main (int argc, char **argv)
   uint8_t status;
   uint16_t depth;
   uint16_t count;
-
+  uint8_t doutLatch;
 
   /*******************/
   
@@ -126,7 +191,7 @@ int main (int argc, char **argv)
   printf("MFG Calibration date = %s\n", asctime(&calDate));
 
   while(1) {
-	printf("Here's what you can do");
+	printf("Here's what you can do\n");
     printf("\nUSB 2408 Testing\n");
     printf("----------------\n");
     printf("Hit 'b' to blink\n");
@@ -218,9 +283,10 @@ int main (int argc, char **argv)
   	  scanf("%x", &temp);
 	  usbDOut_USB2408(udev, (uint8_t)temp, 0);
 	  input = usbDOutR_USB2408(udev, 0);
-	  printf("The number you entered = %#x\n\n",input);
+  	  printf("Read %#x from the latch.\n\n",input);
   	  input = usbDIn_USB2408(udev, 0);
-  	  printf("The number you entered = %#x\n\n",input);
+  	  printf("Wrote %#x to the output port.\n\n",input);
+
 	} while (toContinue());
 	break;
       case 'e':
@@ -383,6 +449,24 @@ int main (int argc, char **argv)
 	temperature = tc_temperature_USB2408(udev, tc_type, channel);
 	printf("Temperature = %.3f C  %.3f F\n", temperature, temperature*9./5. + 32.);
         break;
+		
+		
+		
+	  case 'x':
+//    	printf("Enter a number [0-0xff] : " );
+//    	scanf("%x", &temp);
+		
+		doutLatch = usbDOutR_USB2408(udev, 0);
+	    printf("The digital output latch is: %x\n\n", doutLatch);
+		break;
+
+		
+//	  case 'X':
+//  	    usbDOut_USB2408(udev, (uint8_t)temp, 0);
+// 	    input = usbDOutR_USB2408(udev, 0);
+//	    printf("The number you entered = %#x\n\n",input);
+ // 	    input = usbDIn_USB2408(udev, 0);
+		
       case 'v':
         usbGetVersion_USB2408(udev, version);
 	printf("USB micro firmware version = %x.%2.2x\n", version[0]/0x100, version[0]%0x100);

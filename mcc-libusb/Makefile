@@ -75,7 +75,7 @@ test-usb2408:	test-usb2408.c usb-2408.o libmccusb.a
 	$(CC) -g -Wall -I. -o $@ $@.c -L. -lmccusb  -lm -L/usr/local/lib -lhidapi-libusb -lusb-1.0 
 
 jtest:		jtest.c usb-2408.o libmccusb.a 
-	$(CC) -g -Wall -I. -o $@ $@.c -L. -lmccusb  -lm -L/usr/local/lib -lhidapi-libusb -lusb-1.0 
+	$(CC) -g -Wall -I. -I/usr/include/python3.4 -o $@ $@.c -L. -lmccusb  -lm -L/usr/local/lib -lhidapi-libusb -lusb-1.0 
 
 blinky:	blinky.c usb-2408.o libmccusb.a 
 	$(CC) -g -Wall -I. -I/usr/include/python3.4 -o $@ $@.c -L. -lmccusb  -lm -L/usr/local/lib -lhidapi-libusb -lusb-1.0 
