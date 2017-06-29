@@ -47,7 +47,7 @@ HZ10             = 13      #     10 S/s
 HZ5              = 14      #      5 S/s
 HZ2_5            = 15      #    2.5 S/s
 
-
+############ Sensor Configuration Data ################################################
 
 ### Thermocouple configuration (Python dictionary of tuples) ###
 #                    Channel MCCChannel   Type       Units  
@@ -92,8 +92,11 @@ digOutConfig = {'DO0': [ 0,        0,           True ],
 				'DO3': [ 3,        3,           True ]
 }			
 
+####################################################################################
 
 
+
+### Functions ######################################################################
 
 def digitalIOTests():
 	"Digital I/O Tests"
@@ -149,9 +152,10 @@ def thermocoupleTests():
 	tc2_temp = mcc2408Module.readTCChannel(2)
 
 	print("\n")
-	print("The temperature on channel 0 is: " +  str(tc0_temp) + " " + str(DEGREES_F) )
-	print("The temperature on channel 1 is: " +  str(tc1_temp) + " " + str(DEGREES_C) )
-	print("The temperature on channel 2 is: " +  str(tc2_temp) + " " + str(DEGREES_F) )
+	print("The temperature is: " +  str(tc0_temp) + " " + str(DEGREES_F) )
+#	print("The temperature on channel 1 is: " +  str(tc1_temp) + " " + str(DEGREES_C) )
+#	print("The temperature on channel 2 is: " +  str(tc2_temp) + " " + str(DEGREES_F) )
+
 	return;
 
 
@@ -178,14 +182,15 @@ def analogOutTests():
 	volts = mcc2408Module.readAIChannel(1)
 	print("AI1 volts = " + str(volts))
 
-	print("\n")
-	
 	return;
 
+#######################################################################################	
 	
 	
+	
+### ********* Main ****************	
 
-# Init the MCC
+### Init the MCC
 print(mcc2408Module.version())
 mcc2408Module.init()
 
@@ -194,32 +199,38 @@ mcc2408Module.init()
 for k, v in tcConfig.items():
     mcc2408Module.setTCConfig(v[0], v[1], v[2], ord(v[3]))
 
-# Digital Inputs
+### Digital Inputs
 for k, v in digInConfig.items():
     mcc2408Module.setDIConfig(v[0], v[1], v[2])
 	
-# Digital Outputs
+### Digital Outputs
 for k, v in digOutConfig.items():
     mcc2408Module.setDOConfig(v[0], v[1], v[2])
 
-# Analog Inputs
+### Analog Inputs
 for k, v in analogInConfig.items():
     mcc2408Module.setAIConfig(v[0], v[1], v[2], v[3], v[4])
 
-# Analog Outputs
+### Analog Outputs
 for k, v in analogOutConfig.items():
     mcc2408Module.setAOConfig(v[0], v[1])
 
 	
-print("\nThermocouple Tests\n")
-thermocoupleTests()
-print("\n")
-input('<')
-print("\nAnalog Input Tests\n")
-analogInTests()
-input('<')
-print("\nAnalog Output Tests\n")
-analogOutTests()
+	
+	
+	
+#print("\nThermocouple Tests\n")
+
+while True:
+    thermocoupleTests()
+    input('>')
+#print("\n")
+#input('<')
+#print("\nAnalog Input Tests\n")
+#analogInTests()
+#input('<')
+#print("\nAnalog Output Tests\n")
+#analogOutTests()
 
 
 

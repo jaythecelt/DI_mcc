@@ -221,10 +221,6 @@ static PyObject* setAIConfig(PyObject* self, PyObject* args)
 	AIConfig[channel].rate = rate;	
 	AIConfig[channel].mode = mode;	
 	
-	
-	printf("\tsetAIConfig -> channel %d mccChannel %d mode %d  gain %d rate %d\n", channel, AIConfig[channel].mccChannel, AIConfig[channel].mode, AIConfig[channel].gainRange, AIConfig[channel].rate );
-	
-	
 	return Py_BuildValue("i", mccChannel);
 }
 
@@ -263,7 +259,6 @@ static PyObject* readTCChannel(PyObject* self, PyObject* args)
     double temp = readTC(channel);
 
 	return Py_BuildValue("d", temp);
-    
 }
 
 
@@ -307,15 +302,11 @@ static PyObject* writeDOChannel(PyObject* self, PyObject* args)
 	uint8_t bitno = DOConfig[channel].mccChannel;
 	uint8_t portData = usbDOutR_USB2408(udev, 0); //Read the digital output latch
 
-//	printf("\tchannel %d   data %d   mccChannel %d\n", channel, data, DOConfig[channel].mccChannel );
-//	printf("\tbitno %x   portData %x\n", bitno, portData);	
-	
 	if (DOConfig[channel].invert) 
 		data = ~data;
 	data = data & 0x01;      //Mask any extra bits, using only bit 0
 	portData &= ~(1<<bitno); //Clear the bit from portData
 	portData |= data<<bitno; //Set the bit to the data value
-//	printf("\tdata to be written to port: %x\n", portData);	
 	usbDOut_USB2408(udev, portData, 0); //Writes the entire port to the latch.
 
 	return Py_BuildValue("i", data); //Return what was written
@@ -351,11 +342,6 @@ static PyObject* readAIChannel(PyObject* self, PyObject* args)
 							AIConfig[channel].rate, 
 							&flags);
 
-	printf("\treadAIChannel -> channel %d mccChannel %d mode %d  gain %d  rate %d\n", channel, AIConfig[channel].mccChannel, AIConfig[channel].mode, AIConfig[channel].gainRange,AIConfig[channel].rate );
-
-
-
-							
 	gain = AIConfig[channel].gainRange;
 	//Calculate voltage
 	data = data*table_AIN[gain][0] + table_AIN[gain][1];
@@ -372,12 +358,7 @@ static PyObject* writeAOChannel(PyObject* self, PyObject* args)
 	if (!PyArg_ParseTuple(args, "i|d", &channel, &volts)) {
 		return NULL;
 	}
-	
-	
-	printf("\twriteAOChannel -> channel %d mccChannel %d volts %f\n", channel, AOConfig[channel].mccChannel, volts );
-	
     usbAOut_USB2408_2AO(udev, AOConfig[channel].mccChannel, volts, table_AO);
-	
 	return Py_BuildValue("d", volts);
 }
 
@@ -488,9 +469,9 @@ void initDriver()
     }
 
     if ((udev = usb_device_find_USB_MCC(USB2408_2AO_PID, NULL))) {
-        printf("Success, found a USB 2408_2AO!\n");
+//        printf("Success, found a USB 2408_2AO!\n");
     } else {
-        printf("Failure, did not find a 2408_2AO!\n");
+        perror("Failure, did not find a 2408_2AO!\n");
         exit(1);
     }
 
@@ -506,6 +487,7 @@ void initDriver()
 double readTC(uint8_t channel)
 {
     double temperature = tc_temperature_USB2408(udev, TCConfig[channel].tcType, TCConfig[channel].mccChannel);
+    
 	if (TCConfig[channel].units == DEGREES_F) {
 		//Return degrees F
 		return (temperature * 9./5. + 32.);

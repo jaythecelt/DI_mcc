@@ -92,7 +92,7 @@ clean:
 
 dist:	
 	make clean
-	cd ..; tar -zcvf $(DIST_NAME) mcc-libusb/$(DIST_FILES);
+	cd ..; tar -zcvf $(DIST_NAME) mcc_libusb/$(DIST_FILES);
 
 install:
 	-install -d /usr/local/lib
