@@ -1,20 +1,6 @@
 /*
  *
- *  Copyright (c) 2015 Warren J. Jasper <wjasper@tx.ncsu.edu>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ 
 */
 
 #include <stdlib.h>
@@ -40,6 +26,7 @@
 #define MAX_DIO 8
 #define MAX_AI 8
 #define MAX_AO 2
+#define MAX_CNTR 2
 
 
 /** MCC Channel configurations **/
@@ -86,6 +73,12 @@ typedef struct AnalogOut_Config_t
 
 AnalogOut_Config AOConfig[MAX_AO];
 
+typedef struct Cntr_Config_t
+{
+	uint8_t mccChannel;
+} Cntr_Config;
+
+Cntr_Config CntrConfig[MAX_CNTR];
 
 
 
@@ -240,8 +233,60 @@ static PyObject* setAOConfig(PyObject* self, PyObject* args)
 	return Py_BuildValue("i", mccChannel);
 }
 
+/**
+ *	Configures a counter channel
+ *
+ */
+static PyObject* setCntrConfig(PyObject* self, PyObject* args)
+{
+	int channel;
+	int mccChannel;
+	if (!PyArg_ParseTuple(args, "i|i", &channel, &mccChannel)) {
+		return NULL;
+	}
+	CntrConfig[channel].mccChannel = mccChannel;
+	return Py_BuildValue("i", mccChannel);
+}
 
 
+/**
+ *  Starts the counter specified by the channel in the parameter
+ *
+ */
+  
+static PyObject* startCntrChannel(PyObject* self, PyObject* args)
+{
+    int channel;
+    int mccChannel;
+    
+	if (!PyArg_ParseTuple(args, "i", &channel)) {
+		return NULL;
+	}
+    mccChannel = CntrConfig[channel].mccChannel;
+
+    usbCounterInit_USB2408(udev, mccChannel);
+    return Py_BuildValue("i", mccChannel);
+}
+
+/**
+ *  Reads the 32 bit counter specified by the channel in the parameter
+ *
+ */
+
+static PyObject* readCntrChannel(PyObject* self, PyObject* args)
+{
+	int channel;
+	int mccChannel;
+    int val;
+    
+	if (!PyArg_ParseTuple(args, "i", &channel)) {
+		return NULL;
+	}
+    mccChannel = CntrConfig[channel].mccChannel;
+    val = usbCounter_USB2408(udev, mccChannel);
+    
+    return Py_BuildValue("i", val);
+}
 
 
 /**
@@ -430,12 +475,15 @@ static PyMethodDef methods[] = {
 	{"setDOConfig",    setDOConfig,              METH_VARARGS, "Configures a DO channel"},
 	{"setAIConfig",    setAIConfig,              METH_VARARGS, "Configures a AI channel"},
 	{"setAOConfig",    setAOConfig,              METH_VARARGS, "Configures a AO channel"},
+    {"setCntrConfig",  setCntrConfig,            METH_VARARGS, "Configures a Counter channel"},
 	{"readTCChannel",  readTCChannel,            METH_VARARGS, "Reads the thermocouple" },
 	{"readDIChannel",  readDIChannel,            METH_VARARGS, "Reads the digital input" },	
 	{"writeDOChannel", writeDOChannel,           METH_VARARGS, "Writes a digital output" },	
 	{"readAIChannel",  readAIChannel,            METH_VARARGS, "Reads an AI channel"},
 	{"writeAOChannel", writeAOChannel,           METH_VARARGS, "Writes an analog output" },	
-	{"readDOLatch",    (PyCFunction)readDOLatch, METH_NOARGS, "Reads the digital output latch"},
+	{"readDOLatch",    (PyCFunction)readDOLatch, METH_NOARGS,  "Reads the digital output latch"},
+    {"startCntrChannel", startCntrChannel,       METH_VARARGS, "Start a Counter channel"},
+    {"readCntrChannel", readCntrChannel,         METH_VARARGS, "Reads a Counter channel"},
 	{"setBlinks",      setBlinks,                METH_VARARGS, "Test function Sets the number of blinks" },
 	{"doBlinks",       (PyCFunction)doBlinks,    METH_NOARGS, "Blink the LED per setBlinks value" },
 	{"init",           (PyCFunction)init,        METH_NOARGS, "Initialize the driver" },

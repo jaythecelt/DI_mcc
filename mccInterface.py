@@ -8,6 +8,7 @@ import time
 from mcc_libusb import mcc2408Module
 
 from mccConfigData import *
+import counterQueue
 
 
 def initMCC():
@@ -37,10 +38,12 @@ def initMCC():
     for k, v in analogOutConfig.items():
         mcc2408Module.setAOConfig(v[0], v[1])
 
-
+    ### Counters
+    for k, v in counterConfig.items():
+        mcc2408Module.setCntrConfig(v[0], v[1])
+    
+    
     return
-
-
 
 '''
 Get the real time sensor data, based on the configuration data.
@@ -49,14 +52,16 @@ Get the real time sensor data, based on the configuration data.
 '''
     "Reads all the data on the MCC and returns the json dictionary"
 '''
-
 def readAllMCC():
+    # Note: does *not* read the counter values #
 
     # Dictionaries to hold data
     rtData = {} # all data elements
     tcData = {} # thermocouple data
     aiData = {} # analog input data
     diData = {} # digital input data
+    ctrData = {}# counter data
+    
 
     # Thermocouples
     for k, v in tcConfig.items():
@@ -73,11 +78,33 @@ def readAllMCC():
         j = mcc2408Module.readDIChannel(v[0])
         diData[k] = j
 
-    rtData['TC'] = tcData
-    rtData['AI'] = aiData
-    rtData['DI'] = diData
-   
+    # Counter Inputs
+    ctrQ = counterQueue.CounterDataQueue()
+    ctrArray = [None, None]
+    while not ctrQ.isEmpty():
+        ctrTuple = ctrQ.get()  #  Returns a tuple with index, value
+        if ctrTuple[1] is not None:
+            ix = ctrTuple[0]
+            val = ctrTuple[1]
+            ctrArray[ix] = val
+
+    for k,v in counterConfig.items():
+        ctrData[k] = ctrArray[v[0]]    # k is the label and v[0] is the channel from counterConfig
+    
+    if len(tcData)>0:
+        rtData['TC'] = tcData
+    if len(aiData)>0:
+        rtData['AI'] = aiData
+    if len(diData)>0:
+        rtData['DI'] = diData
+    if len(ctrData)>0:
+        rtData['CT'] = ctrData
     return rtData
 
     
 
+    
+    
+    
+    
+    

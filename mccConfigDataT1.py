@@ -60,30 +60,30 @@ AMPS = 'A'
 
 ### Thermocouple configuration (Python dictionary of tuples) ###
 #                    Channel MCCChannel   Type       Units  
-tcConfig = {#'TC0': [ 0,      0,           TYPE_K,    DEGREES_F],
-            
-           
+tcConfig = {'TC0': [ 0,      0,           TYPE_K,    DEGREES_F],
+            'TC1': [ 1,      0,           TYPE_K,    DEGREES_C],
+            'TC2': [ 2,      0,           TYPE_S,    DEGREES_F]
 }
 
 ### Analog Inputs
 #                           Channel   MCCChannel  Gain Range  Rate     Mode
-analogInConfig  = { #'AI0': [ 0,       3,          BP_5V,      HZ1000,  DIFFERENTIAL ],
-					#'AI1': [ 1,       7,          BP_5V,      HZ1000,  DIFFERENTIAL ]
+analogInConfig  = { 'AI0': [ 0,       3,          BP_5V,      HZ1000,  DIFFERENTIAL ],
+					'AI1': [ 1,       7,          BP_5V,      HZ1000,  DIFFERENTIAL ]
 }
 
 ### Analog Outputs
 #                           Channel   MCCChannel
-analogOutConfig = { #'AO0': [ 0,        0         ],
-					#'AO0': [ 1,        1         ],
+analogOutConfig = { 'AO0': [ 0,        0         ],
+					'AO0': [ 1,        1         ],
 }
 
 ### Digital Inputs
 #                       Channel   MCCChannel   Invert
 digInConfig = {
-			   #'DI0': [ 0,        4,           False ],
-               #'DI1': [ 1,        5,           False ],
-			   #'DI2': [ 2,        6,           False ],
-			   #'DI3': [ 3,        7,           False ]			   
+			   'DI0': [ 0,        4,           False ],
+               'DI1': [ 1,        5,           False ],
+			   'DI2': [ 2,        6,           False ],
+			   'DI3': [ 3,        7,           False ]			   
 }			
 
 ### Digital Outputs
@@ -96,9 +96,9 @@ digInConfig = {
 #
 #                        Channel   MCCChannel   Invert
 digOutConfig = {'DO0': [ 0,        0,           True ],
-                #'DO1': [ 1,        1,           True ],
-				#'DO2': [ 2,        2,           True ],
-				#'DO3': [ 3,        3,           True ]
+                'DO1': [ 1,        1,           True ],
+				'DO2': [ 2,        2,           True ],
+				'DO3': [ 3,        3,           True ]
 }			
 
 ### Counters

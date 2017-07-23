@@ -10,6 +10,8 @@ import json
 import time
 from _thread import *
 
+import humiditySensor
+
 import mccInterface
 
 
@@ -36,6 +38,9 @@ def startServer():
 
     skt.listen(1) #Allow one connection at a time.
     start_new_thread(threaded_server, ())
+    
+    humiditySensor.startHumThread()
+    
     return
     
 def sendMessage(message, conn):
@@ -57,24 +62,32 @@ def receiveMessage(conn):
 
     return payload
     
+# Generates the payload JSON.
+def getRTData():
+    rtData = mccInterface.readAllMCC()
+    rtJson = json.dumps(rtData)
+    print(rtJson)
+    return rtJson
+
+
 def threaded_server():    
     global skt
     while True:
+        # Block to accept commands from the dipClient
         conn, address = skt.accept()
-        payload = receiveMessage(conn)
-        if not payload:
-            print("Breaking out of thread .... due missing payload")
+        clientMsg = receiveMessage(conn)
+        if not clientMsg:
+            print("Breaking out of thread .... due missing client message")
             break
-        message = str(payload)
+        message = str(clientMsg)
         messageHandler(message, conn)
 
     skt.close()
     conn.close()
     return
-
-
-    
-    
+   
+   
+# Handles messages from the dip Client
 def messageHandler(message, conn):
     if (message=="RT"):
         rtJson = getRTData()
@@ -86,12 +99,6 @@ def messageHandler(message, conn):
 
     return
     
-    
-# Generates the payload JSON.
-def getRTData():
-    rtData = mccInterface.readAllMCC()
-    rtJson = json.dumps(rtData)
-    return rtJson
     
     
     
