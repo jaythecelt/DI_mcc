@@ -60,9 +60,8 @@ AMPS = 'A'
 
 ### Thermocouple configuration (Python dictionary of tuples) ###
 #                    Channel MCCChannel   Type       Units  
-tcConfig = {#'TC0': [ 0,      0,           TYPE_K,    DEGREES_F],
-            
-           
+tcConfig = {'TC0': [ 0,      0,           TYPE_K,    DEGREES_F],
+
 }
 
 ### Analog Inputs
@@ -95,7 +94,7 @@ digInConfig = {
 #             ... i.e. writing 1 sets the output to high.
 #
 #                        Channel   MCCChannel   Invert
-digOutConfig = {'DO0': [ 0,        0,           True ],
+digOutConfig = {#'DO0': [ 0,        0,           True ],
                 #'DO1': [ 1,        1,           True ],
 				#'DO2': [ 2,        2,           True ],
 				#'DO3': [ 3,        3,           True ]
@@ -103,8 +102,8 @@ digOutConfig = {'DO0': [ 0,        0,           True ],
 
 ### Counters
 #                          Channel   MCCChannel
-counterConfig = {'CTR0': [ 0,        0],
-                 'CTR1': [ 1,        1]
+counterConfig = {'H0': [ 0,        0],
+                 #'CTR1': [ 1,        1]
 }			
 
 

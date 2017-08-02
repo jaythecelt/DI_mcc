@@ -97,8 +97,10 @@ def readAllMCC():
         rtData['AI'] = aiData
     if len(diData)>0:
         rtData['DI'] = diData
+
+#Humidity Sensor Data is in the counter Queue ... TODO: fix this on the rewrite.
     if len(ctrData)>0:
-        rtData['CT'] = ctrData
+        rtData['HM'] = ctrData
     return rtData
 
     
