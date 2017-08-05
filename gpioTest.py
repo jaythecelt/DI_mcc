@@ -15,17 +15,21 @@ def toggleClk():
 def readHSensor():
     print("Read Humidity Sensor")
     #Reset counter
+    GPIO.output(latchPin, L)
+    GPIO.output(rstPin, L)
+    time.sleep(0.000010)
     GPIO.output(latchPin, H)  # Be sure counter is not latched
     GPIO.output(rstPin, H)
-    time.sleep(0.000100)
     #Start counter
-    GPIO.output(rstPin, L)
     startTime = time.time()
+
     #Wait 1 sec
     time.sleep(1)
     #Latch counter data
-    GPIO.output(latchPin, L)
     endTime = time.time()
+    GPIO.output(latchPin, L)
+    GPIO.output(rstPin, L)
+    time.sleep(0.000010)
     GPIO.output(latchPin, H)     
     GPIO.output(rstPin, H)
 
@@ -42,6 +46,12 @@ def readHSensor():
         shift = shift - 1
         GPIO.output(clkPin, H) #Raise the clock
 #        time.sleep(0.000001) #small delay
+
+
+    sampleTime = endTime - startTime  # Actual sample time in seconds
+    val = int(float(val)/sampleTime)  # Filter to compensate for variations in the sample period.
+    
+
     
     print("Value read is: ", val, " Elapsed sec: ", endTime - startTime)
 
@@ -66,6 +76,8 @@ GPIO.setup(6, GPIO.OUT)
 GPIO.setup(13, GPIO.OUT)
 GPIO.setup(19, GPIO.OUT)
 GPIO.setup(26, GPIO.IN)
+
+print("Version with filter/removed rst/latch timing changes")
 
 try:
 

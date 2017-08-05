@@ -110,9 +110,7 @@ def humDataHandler(a = 'default'):
     ctrQ = counterQueue.CounterDataQueue()
     count = readCounter()
     sampleTime = endTime - startTime  # Actual sample time in seconds
-    c = count
-    count = int(float(count)/sampleTime)
-    print("Count: ", c, " ", count, "  sample: ", sampleTime)    
+    count = int(float(count)/sampleTime)  # Filter to compensate for variations in the sample period.
     ctrQ.put((0,count))
 
     # Start the counter for the next time

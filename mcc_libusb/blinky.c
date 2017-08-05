@@ -516,13 +516,14 @@ void initDriver()
         exit(1);
     }
 
-    if ((udev = usb_device_find_USB_MCC(USB2408_2AO_PID, NULL))) {
-//        printf("Success, found a USB 2408_2AO!\n");
-    } else {
-        perror("Failure, did not find a 2408_2AO!\n");
-        exit(1);
-    }
-
+  if ((udev = usb_device_find_USB_MCC(USB2408_PID, NULL))) {
+    printf("Found a USB 2408.  Note: analog outputs are not available with this model.\n");
+  } else if ((udev = usb_device_find_USB_MCC(USB2408_2AO_PID, NULL))) {
+    printf("Found a USB 2408_2AO.\n");
+  } else {
+    printf("Failure, did not find a USB 2408 or 2408_2AO!\n");
+    exit(2);
+  }
     //Build analog in and thermocouple tables//
     usbBuildGainTable_USB2408(udev, table_AIN);
     usbBuildCJCGradientTable_USB2408(udev, table_CJCGrad);
