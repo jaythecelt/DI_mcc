@@ -5,9 +5,10 @@
 
 '''
 
+from HtpLogger import HtpLogger
+log = HtpLogger("gpioTest", HtpLogger.DEBUG, HtpLogger.DEBUG)
 import RPi.GPIO as GPIO
 import time
-from HtpLogger import HtpLogger
 
 
 
@@ -21,6 +22,8 @@ from HtpLogger import HtpLogger
     MSB to LSB order.
     
 '''
+
+
 def readHSensor():
     global latchPin, clkPin, dataPin
     global H, L
@@ -119,7 +122,6 @@ def readHSensor2():
 def main():    
     global rstPin, latchPin, clkPin, dataPin
     global H, L
-    global log
 
     # Pin definitions
     rstPin   = 6
@@ -135,11 +137,6 @@ def main():
     GPIO.setup(19, GPIO.OUT)
     GPIO.setup(26, GPIO.IN)
 
-    # Setup logger
-    
-    log = HtpLogger("gpioTest", logging.DEBUG, logging.DEBUG)
-    
-    
     # Notes about this version
     log.info("\n\n== Note: has changes to debug the counter discrepencies noted in testing. ==\n\n")
     log.info("\nHighlights: \n\t- 'one shot' mode where it take one reading at a time.\n\n")
