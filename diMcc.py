@@ -1,28 +1,38 @@
+from HtpLogger import HtpLogger
+
+# Setup logger
+logPrefix = "diMcc"
+log = HtpLogger(logPrefix, HtpLogger.DEBUG, HtpLogger.DEBUG)
+
 import json
 import dipServer
 import humiditySensor
 
-try:
-    print("Starting new server thread")
-    dipServer.startServer()
 
+
+def main():
+
+    try:
+        log.info("Starting new server thread")
+        dipServer.startServer()
+
+        
+        while True:
+            pass
+
+
+    except KeyboardInterrupt:
+        log.info("Exiting")
+
+    except Exception as e:
+        log.error("Exception in main loop", str(e))
+        
+    finally:
+        log.info("Shutting down the MCC Data Injector!.")
+        humiditySensor.cleanup()
     
-    while True:
-        pass
 
-
-except KeyboardInterrupt:
-    print("Exiting")
-
-except Exception as e:
-    print("Exception in main loop", str(e))
-    
-finally:
-    print("Shutting down the MCC Data Injector!.")
-    humiditySensor.cleanup()
-    
-
-
+main()
         
 
 

@@ -2,6 +2,7 @@ import sched, time
 from _thread import *
 import RPi.GPIO as GPIO
 import counterQueue
+from HtpLogger import HtpLogger
 
 UPDATE_PERIOD = 1  # In seconds
 PRIORITY = 1
@@ -14,6 +15,7 @@ dataPin = 26
 H = GPIO.HIGH
 L = GPIO.LOW
 
+log = HtpLogger.get()
 
 
 
@@ -58,7 +60,7 @@ def  humThread():
     #Blocks while the schedule is running
     humSched.run()
     scheduleRunning = False
-    print("humThread stopped")
+    log.warn("humThread stopped")
     return
     
 

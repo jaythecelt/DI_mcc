@@ -11,9 +11,8 @@ import time
 from _thread import *
 
 import humiditySensor
-
 import mccInterface
-
+from HtpLogger import HtpLogger
 
 
 HOST = ''
@@ -22,7 +21,7 @@ HDR_LEN = 5   # Message header length
 
 RT_CMD = "RT"
 
-
+log = HtpLogger.get()
 
 def startServer():
     global skt
@@ -34,7 +33,7 @@ def startServer():
     try:
         skt.bind((HOST, PORT))
     except socket.error as msg:
-        print(msg)
+        log.error(msg)
 
     skt.listen(1) #Allow one connection at a time.
     start_new_thread(threaded_server, ())
@@ -66,7 +65,7 @@ def receiveMessage(conn):
 def getRTData():
     rtData = mccInterface.readAllMCC()
     rtJson = json.dumps(rtData)
-    print(rtJson)
+    log.info(rtJson)
     return rtJson
 
 
@@ -77,7 +76,7 @@ def threaded_server():
         conn, address = skt.accept()
         clientMsg = receiveMessage(conn)
         if not clientMsg:
-            print("Breaking out of thread .... due missing client message")
+            log.warning("Breaking out of thread .... due to missing client message")
             break
         message = str(clientMsg)
         messageHandler(message, conn)
@@ -96,6 +95,7 @@ def messageHandler(message, conn):
         pass
     else:
         sendMessage("{ \"Error\":\"Unknown request\"}", conn)
+        log.error("Error: Unknown request: " + message)
 
     return
     

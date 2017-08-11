@@ -6,15 +6,20 @@ import json
 import time
 
 from mcc_libusb import mcc2408Module
+from HtpLogger import HtpLogger
 
 from mccConfigData import *
 import counterQueue
 
 
+
+log = HtpLogger.get()
+
+
 def initMCC():
     #TODO Try/catch
     
-    print(mcc2408Module.version())
+    log.info(mcc2408Module.version())
     mcc2408Module.init()
 
     ### Init the MCC's channels per config data ###

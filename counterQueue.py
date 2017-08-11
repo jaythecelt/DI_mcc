@@ -3,7 +3,7 @@ Counter Data Queue
 
 The class is designed as a Singleton
 '''
-import logging
+from HtpLogger import HtpLogger
 import queue
 
 QUEUE_MAX_SIZE = 10
@@ -26,8 +26,10 @@ class CounterDataQueue:
     # Method implementations go here.
     class __CounterDataQueue:
         cntrQ = None
+        log = None
         
         def __init__(self):
+            self.log = HtpLogger.get()
             self.cntrQ = queue.Queue(maxsize=QUEUE_MAX_SIZE)
    
         def __str__(self):
@@ -37,7 +39,7 @@ class CounterDataQueue:
             try:
                 self.cntrQ.put(v, True, QUEUE_PUT_TIMEOUT)
             except (queue.Full):
-                logging.warning("Counter Data Queue is full, value dropped: " + str(v))
+                self.log.warning("Counter Data Queue is full, value dropped: " + str(v))
                 return
                 
         def get(self):
