@@ -68,7 +68,9 @@ $RECYCLE.BIN/
 *.o
 *.a
 *.so
+*.d
 mcc_libusb/*.o
 mcc_libusb/*.a
 mcc_libusb/*.so
+mcc_libusb/*.d
 __pycache__
