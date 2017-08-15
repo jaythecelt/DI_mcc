@@ -74,3 +74,6 @@ mcc_libusb/*.a
 mcc_libusb/*.so
 mcc_libusb/*.d
 __pycache__
+mcc_libusb/jtest
+mcc_libusb/test-usb2408
+
