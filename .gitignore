@@ -62,3 +62,13 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 *.log
+
+
+# Generated Dev Files
+*.o
+*.a
+*.so
+mcc_libusb/*.o
+mcc_libusb/*.a
+mcc_libusb/*.so
+__pycache__
