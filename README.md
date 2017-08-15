@@ -3,7 +3,7 @@ A data injector that works with an MCC USB2408 or USB2408-2AO.
 
 ## Installation
 DI_mcc runs on Python 3.4+
-```sh
+```
 $ cd /home/pi
 ```
 Clone the MCC Data Injector drivers:
@@ -50,7 +50,7 @@ $ sudo ldconfig
 $ sudo python3 setup.py build
 ```
 
-## Test App to verify comms withe the MMC USB2408 device
+## Test App to verify comms with the MMC USB2408 device
 If an MCC 2408-2AO is available:
 Connect MCC USB2408-2A0 to a USB port on the RPi
 ```sh
