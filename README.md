@@ -1,6 +1,8 @@
 # DI_mcc
 A data injector that works with an MCC USB2408 or USB2408-2AO.
 
+> Scroll down to **Build the MCC data injector** to build an existing installation.
+
 ## Installation
 DI_mcc runs on Python 3.4+
 ```
