@@ -79,10 +79,10 @@ analogOutConfig = { #'AO0': [ 0,        0         ],
 ### Digital Inputs
 #                       Channel   MCCChannel   Invert
 digInConfig = {
-			   #'DI0': [ 0,        4,           False ],
-               #'DI1': [ 1,        5,           False ],
-			   #'DI2': [ 2,        6,           False ],
-			   #'DI3': [ 3,        7,           False ]			   
+			   'DI0': [ 0,        0,           False ],
+               'DI1': [ 1,        1,           False ],
+			   'DI2': [ 2,        2,           False ],
+			   'DI3': [ 3,        3,           False ]			   
 }			
 
 ### Digital Outputs
