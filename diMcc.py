@@ -2,12 +2,9 @@ from HtpLogger import HtpLogger
 
 # Setup logger
 logPrefix = "diMcc"
-log = HtpLogger(logPrefix, HtpLogger.DEBUG, HtpLogger.DEBUG)
+log = HtpLogger(logPrefix, HtpLogger.DEBUG, HtpLogger.INFO)
 
-import json
 import dipServer
-import humiditySensor
-
 
 
 def main():
@@ -22,14 +19,15 @@ def main():
 
 
     except KeyboardInterrupt:
+        dipServer.stopServer()
         log.info("Exiting")
 
     except Exception as e:
-        log.error("Exception in main loop", str(e))
+        log.error("Exception in main loop: {0}".format(e))
         
     finally:
         log.info("Shutting down the MCC Data Injector!.")
-        humiditySensor.cleanup()
+
     
 
 main()

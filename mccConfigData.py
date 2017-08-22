@@ -3,6 +3,9 @@ Constnats and Configuration data for the interface to the MCC 2408-2A0
 
 
 '''
+from RTEvent import RTEvent
+
+
 ################ Constants #########################
 #Thermocouples
 TYPE_J = 0
@@ -55,12 +58,20 @@ DEGREES_C = 'C'
 VOLTS = 'V'
 AMPS = 'A'
 
+THERMOCOUPLE_DATA_KEY   = 'TC'
+ANALOG_INPUT_DATA_KEY   = 'AI'
+ANALOG_OUTPUT_DATA_KEY  = 'AO'
+DIGITAL_INPUT_DATA_KEY  = 'DI'
+DIGITAL_OUTPUT_DATA_KEY = 'DO'
+HUMIDITY_DATA_KEY       = 'HM'
+
 
 ############ Sensor Configuration Data ################################################
 
 ### Thermocouple configuration (Python dictionary of tuples) ###
 #                    Channel MCCChannel   Type       Units  
-tcConfig = {'TC0': [ 0,      0,           TYPE_K,    DEGREES_F],
+tcConfig = {
+	#'TC0': [ 0,      0,           TYPE_K,    DEGREES_F],
 
 }
 
@@ -77,12 +88,12 @@ analogOutConfig = { #'AO0': [ 0,        0         ],
 }
 
 ### Digital Inputs
-#                       Channel   MCCChannel   Invert
+#                       Channel   MCCChannel   Invert	RTEvent   RTEvent Type
 digInConfig = {
-			   'DI0': [ 0,        0,           False ],
-               'DI1': [ 1,        1,           False ],
-			   'DI2': [ 2,        2,           False ],
-			   'DI3': [ 3,        3,           False ]			   
+			   'DI0': [ 0,        0,           False,    True,     RTEvent.DI_RISING_EDGE        ],
+               'DI1': [ 1,        1,           False,    False,    None               ],
+			   'DI2': [ 2,        2,           False,    False,    None               ],
+			   'DI3': [ 3,        3,           False,    False,    None               ]			   
 }			
 
 ### Digital Outputs
