@@ -1,5 +1,31 @@
 '''
-Interface to the MCC 2408-2AO
+    Interface to the MCC USB2408 or USB2408-2AO and other sensors.  Also digital outputs and analog outputs.
+    
+    This module reads data from all of the sensors, including the ones wired to the MCC USB2408.
+    
+    TODO:  This module could use a rewrite to separate the MCC functions from the other sensors.  Technically this
+    module is for all sensors, not just the MCC.
+    
+    
+    readAllMCC() is the primary function.  It reads all of the sensors as defined in the mccConfigData module and detects 
+    any real time events (also as configured).
+    
+    Reading sensors:
+        - Reads sensor data from the MCC box
+        - Since the humidity sensor is sampled over a period of time, and the reading is not available with each readAllMCC()
+          invocation, the sensor reading is pulled from the counterQueue (also a candidate for refactoring).  If no new reading
+          is available in the counterQueue, the latest value is sent.
+        - All sensor data is 'time stampped' using the elapsed time from the FormulaTimer class.  If
+          this timer is not running, the time stamp is 0.
+        - The 'time stamp' or 'formula time' is marked immediately after the sensor data is read to provide the time 
+          as close as practical to the reading of the value. 
+          
+          
+    Communicating results:
+        - Sensor data is compiled into a Python dictionary and returned by readAllMCC().  This dictionary can be converted
+          directly to json by the caller if desired.
+        - As real time events are detected by readAllMCC(), the event json is placed into a separate real time event queue so that it
+          is available for immediate processing, independent of the sensor data returned by readAllMCC().
 
 '''
 import time
@@ -7,6 +33,8 @@ import time
 from mcc_libusb import mcc2408Module
 from HtpLogger import HtpLogger
 from FormulaTimer import FormulaTimer
+from RTEvent import RTEvent
+from RTEventQueue import RTEventQueue
 
 from mccConfigData import *
 import counterQueue
@@ -109,18 +137,22 @@ def readAllMCC():
         j = mcc2408Module.readDIChannel(v[0])
         timeMark = ft.getElapsedTime()
 
-        if k not in prevData:  # If prevDict has not been populated yet ... set the prev value to the current value.
+        if k not in prevData:  # If prevData has not been populated yet ... set the prev value to the current value.
             prevData[k] = j
 
         testForEvent = v[3]
         if testForEvent:
-            RTEvent().submit(DIGITAL_INPUT_DATA_KEY, k, prevData[k], j, v[4], timeMark)
-        
+            rteJson = RTEvent().submit(DIGITAL_INPUT_DATA_KEY, k, prevData[k], j, v[4], timeMark)
+            if (rteJson is not None):
+                rteq = RTEventQueue()
+                rteq.put(rteJson)
         data = { VAL_KEY : j, FORMULA_TIME_KEY :  timeMark}
         diData[k] = data
-        prevData[k] = j
+        prevData[k] = j   # Rewrite previous data with the current value
 
     # Counter Inputs
+    # From the counterQueue ... i.e. the humidity sensor
+    # TODO This should be cleaned up.
     ctrQ = counterQueue.CounterDataQueue()
     ctrArray = [None, None]
     while not ctrQ.isEmpty():

@@ -18,6 +18,7 @@ from RTStreamTask import RTStreamTask
 from MCCTask import MCCTask
 from HumiditySensorTask import HumiditySensorTask
 
+
 HOST = ''
 COMS_PORT = 5560
 RT_STREAM_PORT = 5561
@@ -33,6 +34,7 @@ log = HtpLogger.get()
 def startServer():
     global comsSocket, rtStreamSocket
     global mccTask, humTask, rtTask
+    global rtdRun
     
     # Initialize the MCC
     mccInterface.initMCC()
@@ -54,10 +56,12 @@ def startServer():
     t = threading.Thread(target=mccTask.run, args=())
     t.start()
 
-    # Start the real time data stream thread.  But doesn't send data until instructed to do so.
+    # Start the real time data stream thread.
     rtTask = RTStreamTask()
     t = threading.Thread(target=rtTask.run, args=(rtStreamSocket,))
     t.start()
+
+    rtdRun = False
 
     return
 
@@ -124,10 +128,13 @@ def _messageHandler(message, conn):
     global mccTask, rtdRun
     
     if (message=="RT"):               # Request for real time data
-        rtdRun = True
-        t = threading.Thread(target=_queueRTD, args=())
-        t.start()
-        sendMessage("{\"rtStream\":\"Started\"}", conn)
+        if (rtdRun):
+            sendMessage("{\"rtStream\":\"Already running\"}", conn)
+        else:
+            rtdRun = True
+            t = threading.Thread(target=_queueRTD, args=())
+            t.start()
+            sendMessage("{\"rtStream\":\"Start\"}", conn)
 
     elif (message=="RTStop"):
         rtdRun = False
@@ -168,7 +175,7 @@ def _queueRTD():
     
     while rtdRun:
         mccTask.queueIt()
-        time.sleep(1)
+        time.sleep(0.5)
 
     
 def _receiveMessage(conn):

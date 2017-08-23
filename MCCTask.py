@@ -32,7 +32,7 @@ class MCCTask():
             cc = cc + 1
             with self._value_lock:
                 if self.queueItUp:  # Add to queue if requested
-                    rtJson = "{0}".format(json.dumps(rtData))
+                    rtJson = "{0}".format(json.dumps(rtData, sort_keys=True))
                     rtq.put(rtJson)
                     self.queueItUp = False
     
@@ -41,6 +41,5 @@ class MCCTask():
     def queueIt(self):
         with self._value_lock:
             self.queueItUp = True
-    
     
         
