@@ -105,10 +105,10 @@ digInConfig = {
 #             ... i.e. writing 1 sets the output to high.
 #
 #                        Channel   MCCChannel   Invert
-digOutConfig = {#'DO0': [ 0,        0,           True ],
-                #'DO1': [ 1,        1,           True ],
-				#'DO2': [ 2,        2,           True ],
-				#'DO3': [ 3,        3,           True ]
+digOutConfig = {'DO0': [ 0,        5,           False ],
+                'DO1': [ 1,        6,           False ],
+				'DO2': [ 2,        7,           False ],
+				#'DO3': [ 3,        7,           True ]
 }			
 
 ### Counters

@@ -169,7 +169,9 @@ def _messageHandler(message, conn):
 
 
 
-
+'''
+    Function (to run as a thread) that periodically updates the RT data stream.
+'''
 def _queueRTD():
     global rtdRun, mccTask
     
@@ -197,29 +199,4 @@ def _receiveMessage(conn):
         payload = payload + payloadBytes.decode('utf-8')
 
     return payload
-
-
-
-
-
-
-
-
-
-
-    
-# Generates the payload JSON.
-def _getRTData():
-    rtData = mccInterface.readAllMCC()
-    rtJson = json.dumps(rtData)
-    log.info(rtJson)
-    return rtJson
-
-
-  
-    
-    
-    
-    
-
 

@@ -7,8 +7,8 @@
     module is for all sensors, not just the MCC.
     
     
-    readAllMCC() is the primary function.  It reads all of the sensors as defined in the mccConfigData module and detects 
-    any real time events (also as configured).
+    readAllMCC() is the primary function for reading the sensors.  It reads all of the sensors as defined in the 
+    mccConfigData module and detects any real time events (also as configured).
     
     Reading sensors:
         - Reads sensor data from the MCC box
@@ -27,6 +27,15 @@
         - As real time events are detected by readAllMCC(), the event json is placed into a separate real time event queue so that it
           is available for immediate processing, independent of the sensor data returned by readAllMCC().
 
+
+    digitialOut(label, value) sets the digital output on the MCC that corresponds to the label parameter.  value is a boolean where
+    True is a logical 1 and False is a logical 0.
+    
+    TODO:  Throw a custom excpetion when the label is no defined in the config data.
+
+
+
+
 '''
 import time
 
@@ -38,6 +47,7 @@ from RTEventQueue import RTEventQueue
 
 from mccConfigData import *
 import counterQueue
+
 
 
 VAL_KEY = "value"
@@ -104,7 +114,8 @@ Get the real time sensor data, based on the configuration data.
 '''
 def readAllMCC():
     if not isMCCInitialized():
-        HtpLogger.get().error("mccInterface module not initialized!")
+        HtpLogger.get().critical("mccInterface module not initialized!")
+        return
     
     # Note: does *not* read the counter values #
 
@@ -179,5 +190,44 @@ def readAllMCC():
 
     return rtData
 
+
+
+'''
+    Sets a single digital output that corresponds to <label> to <value>.
+    <value> is a boolean where True == logical 1 and False == logical 0.
+    Critical error when:
+        - <label> is not found in the config data.
+        - MCC was not initialized
+'''
+def digitalOut(label, bval):
+    if (not isMCCInitialized()):
+        HtpLogger.get().critical("mccInterface module not initialized!")
+        return
+    if (label not in digOutConfig):
+        HtpLogger.get().critical("digitalOut(...) label parameter <{0}> not defined in the config data".format(label))
+        return
+    
+    channel = (digOutConfig[label])[0]
+    mcc2408Module.writeDOChannel(channel, bval);
+    
+
+def p2():
+    tt = 0
+    while True:
+        tt = tt + 0.001
+        digitalOut('DO0', True)
+        time.sleep(tt)
+        digitalOut('DO0', False)
+        time.sleep(tt)
+    
+        digitalOut('DO1', True)
+        time.sleep(tt)
+        digitalOut('DO1', False)
+        time.sleep(tt)
+    
+        digitalOut('DO2', True)
+        time.sleep(tt)
+        digitalOut('DO2', False)
+        time.sleep(tt)
     
     
